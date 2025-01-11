@@ -1,0 +1,579 @@
+---
+title: "MoneyBall"
+author: "*FML*"
+date: "1 octobre 2019"
+output: html_document
+---
+# Oakland Athletics
+
+
+<!-- Tables -->  
+# {.tabset}
+## <span style="color: rgb(221,72,20);">Presentation</span>
+
+
+<!-- Image -->
+<div style="float: left; width: 23%; height: 23%; margin-right: 10px;">
+  <img src="https://logodix.com/logo/309093.png" alt="Oakland Athletics Logo" style="width: 100%; height: auto;">
+</div>
+
+
+<!-- Positon -->
+<style>
+  .container {
+    display: flex;
+    align-items: flex-start;
+  }
+  .table-container {
+    flex: 1;
+    padding-right: 20px;
+  }
+  .plot-container {
+    flex: 2;
+  }
+  .table-container table {
+    width: 10%;
+  }
+
+</style>
+ 
+<div class="container">
+<div class="table-container">
+
+
+<!-- Column yearID et Rank -->
+```{r echo=FALSE, error=FALSE, message=FALSE, warning=FALSE, fig.align='left'}
+
+library(Lahman)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Filtrer 
+result <- Teams %>%
+  filter(teamID == "OAK", yearID>=1968 & yearID<=2018)%>%
+  select(yearID, Rank)
+
+# Condition
+result$Rank <- ifelse(
+  result$Rank <= 2,
+  paste0('<span style="background-color: #ADFF2F; color:green; padding: 5px; border-radius: 5px; display: inline-block; width: 20px; transform: rotate(45deg); text-align: center;">', result$Rank, '</span>'),
+  ifelse(
+    result$Rank <= 4,
+    paste0('<span style="background-color: #FFD700; color: yellow; padding: 5px; border-radius: 5px; display: inline-block; width: 20px; transform: rotate(45deg); text-align: center;">', result$Rank, '</span>'),
+    paste0('<span style="background-color: #FF6347; color: darkred; padding: 5px; border-radius: 5px; display: inline-block; width: 20px; transform: rotate(45deg); text-align: center;">', result$Rank, '</span>')
+  )
+)
+
+
+knitr::kable(result[, c("yearID", "Rank")], format = "html", escape = FALSE, row.names = FALSE) %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+</div>
+
+ 
+<div class="container">
+<div class="table-container">
+<div class="plot-container"> 
+</div>
+
+<!-- Graphique -->
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(Lahman)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Filtrer Data
+result <- Teams %>%
+  filter(teamID == "OAK", yearID>=1968 & yearID<=2018)%>%
+  select(yearID, Rank)
+    
+library(ggplot2)
+library(dplyr)
+
+# Filtrer : Team OAK and Year between 1968 and 2018
+result <- Teams %>%
+  filter(teamID == "OAK", yearID >= 1968 & yearID <= 2018) %>%
+  select(yearID, Rank)
+
+# Graph
+ggplot(result, aes(x = yearID, y = Rank)) +
+  geom_point(aes(color = Rank < 2), size = 1.5) + 
+  geom_line(color = "darkgreen", size = 0.5) +
+  
+  scale_y_reverse(breaks = c(6, 4, 2)) +
+  scale_x_continuous(breaks = seq(1970, 2020, by = 10)) +
+  
+  
+  geom_hline(yintercept = 1, linetype = "solid", color = "white", size = 0.3)+
+  geom_hline(yintercept = 4.5, linetype = "dashed", color = "red", size = 0.5) +
+  geom_hline(yintercept = 2.5, linetype = "dashed", color = "limegreen", size = 0.5) +
+  
+  
+  labs(title = "Oakland Athletics",
+       subtitle = "Ranking: 1968 - 2018",
+       x = "Year",
+       y = "Ranking",
+       caption = "Data from Lahman Dataset") +
+  
+  
+  scale_color_manual(values = c("TRUE" = "yellow", "FALSE" = "black")) +
+  
+  
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text( size = 12),
+        plot.subtitle = element_text(size = 8.5),
+        panel.background = element_rect(fill = "gray90", color = NA), 
+        panel.grid.major = element_line(color = "white", size = 0.3), 
+        panel.grid.minor = element_line(color = "white", size = 0.3))
+```
+</div>
+</div>
+</div>
+ 
+## <span style="color: rgb(221,72,20);">League</span>
+
+<div style="display: flex; align-items: flex-start; margin-top: 10px;">
+  <!-- Table Section -->
+  <div style="flex: 1;">
+```{r echo=FALSE, error=FALSE, message=FALSE, warning=FALSE, results='asis'}
+  library(dplyr)
+  library(kableExtra)
+  library(Lahman)
+
+  # Load the dataset
+  league <- TeamsFranchises %>%
+    filter(active == "Y") %>% 
+    select(franchID, franchName)
+
+  # Create a styled table
+  knitr::kable(league, "html") %>%
+    kable_styling("striped", full_width = FALSE, position = "left") %>% 
+    column_spec(1, bold = FALSE) %>%  
+    column_spec(2, color = "black")
+```
+</div>
+
+ <!-- Oakland Athletics Link Section -->
+  <div style="flex: 3;">
+```{r echo=FALSE, results='asis'}
+    cat('<a href="https://www.mlb.com/athletics" style="text-decoration: none; color: rgb(221,72,20); font-size: 1.1em;">Oakland Athletics</a>')
+```
+  </div>
+</div>
+
+
+## <span style="color: rgb(221,72,20);">Fielding 2001 vs 2002</span>
+ 
+<!--Titles-->
+<style>
+
+.title-main {font-size: 12px; 
+
+             margin-bottom: 20px;}
+ 
+.title-sub {font-size: 20px;
+
+            font-weight: bold; 
+
+            margin-bottom: 15px;}
+</style>
+<p class="title-main">Comparaison of the players that played in 2001 vs 2002</p>
+<p class="title-sub">Top players 2001 (number of games played)</p>
+ 
+ 
+<!--Tabs-->
+<style>
+
+table {border-collapse: collapse;
+
+       margin-left: auto; 
+
+       
+       margin-right: 0; 
+
+       width: auto; }
+
+th {font-weight: bold; 
+
+    
+    text-align: left; 
+
+    border-bottom: 2px solid #ddd; 
+
+    padding: 8px;
+
+    
+    background-color: #ffffff;}
+ 
+td {text-align: left; 
+
+    padding: 8px; 
+
+    
+    
+    vertical-align: top;}
+
+tr:nth-child(odd) {background-color: #f9f9f9;}
+
+tr:nth-child(even) {background-color: #ffffff;}
+</style>
+ 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ 
+library(dplyr)
+
+library(Lahman)
+
+library(knitr)
+
+library(kableExtra)
+ 
+top_players <- Fielding %>%
+
+  select(playerID, yearID, stint, teamID, lgID, POS, G, GS, InnOuts, PO, A, E, DP) %>%
+
+  filter(yearID == 2001, teamID == "OAK") %>%
+
+  arrange(desc(G)) %>%
+
+  head(6)
+ 
+top_players_2001 <- top_players %>%
+
+  inner_join(People %>%
+
+  select(playerID, nameFirst, nameLast), by = "playerID") %>%
+
+  select(nameLast, nameFirst, playerID, yearID, stint, teamID, lgID, POS, G, GS, InnOuts, PO, A, E, DP)
+ 
+kable(top_players_2001, format = "html", row.names = FALSE) %>%
+
+  kableExtra::kable_styling(full_width = FALSE, position = "left")
+ 
+```
+ 
+ 
+<!--Title-->
+<style>
+
+.title-sub {font-size: 20px; 
+
+            font-weight: bold;
+
+            margin-bottom: 15px;}
+</style>
+<p class="title-sub">6 Top players from 2001 that did not play in 2002</p>
+ 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ 
+Topplayers2001 <- subset(Fielding, yearID == 2001 & teamID == "OAK" & lgID == "AL")
+
+Topplayers2002 <- subset(Fielding, yearID == 2002 & teamID == "OAK" & lgID == "AL")
+ 
+Fusion <- Topplayers2001 %>% filter(!(playerID %in% Topplayers2002$playerID))
+
+Fusion <- Fusion %>% arrange(desc(G)) %>% slice(1:6)
+ 
+top_2001_2002 <- Fusion %>%
+
+  inner_join(People %>%
+
+  select(playerID, nameFirst, nameLast), by = "playerID") %>%
+
+  select(nameLast, nameFirst, playerID, yearID, stint, teamID, lgID, POS, G, GS, InnOuts, PO, A, E, DP)
+ 
+kable(top_2001_2002, format = "html", row.names = FALSE) %>%
+
+  kableExtra::kable_styling(full_width = FALSE, position = "left")
+
+```
+ 
+<!--Link-->
+<style>
+
+a {color: red; text-decoration: none; }
+</style>
+ 
+<p><a href="https://www.nytimes.com/2001/12/05/sports/baseball-giambi-to-join-yanks-barring-bid-by-the-a-s.html">https://www.nytimes.com/2001/12/05/sports/baseball-giambi-to-join-yanks-barring-bid-by-the-a-s.html</a></p>
+ 
+ 
+
+
+## <span style="color: rgb(221,72,20);">Run differential</span>
+
+```{r RunDiff, message=FALSE, echo= FALSE, warning=FALSE, results = "asis"}
+
+#install ("Lahman")
+library(Lahman)
+
+
+div <- '<div style="text-align:left; color: rgb(221,72,20); !important;">
+  <a href="https://joeblogs.joeposnanski.com/p/the-run-differential-breakdown" class="custom-link2">
+    The run differential breakdown
+  </a>
+</div>'
+
+cat(div)
+
+```
+
+<div style="text-align:left; rgb(221,72,20);  !important;">
+```{r Pythagoras, message=FALSE, warning=FALSE, echo=FALSE, results='asis'}
+cat('<a href="https://www.baseball-reference.com/bullpen/Pythagorean_Theorem_of_Baseball" class="custom-link2">
+        Pythagorean Theorem of Baseball
+      </a>')
+
+```
+</div>
+
+```{r message=FALSE, echo=FALSE,  warning=FALSE, results = "asis"}
+cat('<iframe width="560" height="315" 
+        src="https://www.youtube.com/embed/Tzin1DgexlE?start=88" 
+        data-external= "1">
+      </iframe>')
+
+```
+
+\
+
+```{r message=FALSE, echo=FALSE, warning=FALSE, results = "asis"}
+cat('<div style="background-color: rgb(211,211,211); padding: 15px; width: 50%; margin: 20px 0; text-align: left;">
+  <p>W: Wins</p>
+  <p>L: Losses</p>
+  <p>R: Runs scored</p>
+  <p>RA: Opponents runs scored (Runs Allowed)</p>
+</div>')
+
+```
+
+\
+
+<!-- Image -->
+<div style="text-align: left; margin-top: 20px;">
+  <img src="https://i.imgur.com/xpLbhT5.png" alt="Fielding Formula" style="max-width: 50%; border: 1px solid #ddd; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+</div>
+
+
+\
+
+\( \frac{R^2}{R^2 + RA^2} = \text{Est. W\%} \)
+
+
+\
+
+
+
+```{r library, message=FALSE, echo=FALSE, warning=FALSE, results='asis'}
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(DBI)
+library(RSQLite)
+library(readr)
+library(Lahman)
+
+```
+
+```{r message=FALSE, echo=FALSE, warning=FALSE, results = "asis"}
+
+rundifferential <- (Teams)
+rundifferential <- rundifferential %>%filter(divID!="NULL" & yearID=="2001")
+rundifferential <- rundifferential %>%arrange((teamID))
+rundifferential <- rundifferential %>% select("teamID","G","W","L","R","RA")
+rundifferential <- rundifferential %>%  mutate(
+    `W-L` = W - L,
+    `W%` = paste0(round((W / G) * 100, 1), "%"),
+    `R-RA` = R - RA,
+    `Est.W%` = paste0(round((R^2 / (R^2 + RA^2)) * 100, 1), "%"),
+    `Revised Est.W%` = paste0(round((R^1.83 / (R^1.83 + RA^1.83)) * 100, 1), "%")
+  )
+
+cat('<table class="table styled" style="width: 100% !important;">')  
+cat('<thead><tr>
+      <th style="text-align: left;">teamID</th>
+      <th style="text-align: right;">G</th>
+      <th style="text-align: right;">W</th>
+      <th style="text-align: right;">L</th>
+      <th style="text-align: right;">R</th>
+      <th style="text-align: right;">RA</th>
+      <th style="text-align: right;">W-L</th>
+      <th style="text-align: left;">W%</th>
+      <th style="text-align: right;">R-RA</th>
+      <th style="text-align: left;">Est.W%</th>
+      <th style="text-align: left;">Revised Est.W%</th>
+    </tr></thead>') 
+
+
+cat('<tbody>')
+
+
+for (i in 1:nrow(rundifferential)) {
+  cat(sprintf(
+    '<tr>
+        <td class="align-left">%s</td>
+        <td style="text-align: right;">%d</td>
+        <td class="align-right">%d</td>
+        <td class="align-right">%d</td>
+        <td class="align-right">%d</td>
+        <td class="align-right">%d</td>
+        <td class="align-right">%d</td>
+        <td class="align-left">%s</td>
+        <td class="align-right">%d</td>
+        <td class="align-left">%s</td>
+        <td class="align-left">%s</td>
+     </tr>',
+    rundifferential$teamID[i],          
+    rundifferential$G[i],             
+    rundifferential$W[i],             
+    rundifferential$L[i],             
+    rundifferential$R[i],             
+    rundifferential$RA[i],            
+    rundifferential$`W-L`[i],         
+    rundifferential$`W%`[i],         
+    rundifferential$`R-RA`[i],        
+    rundifferential$`Est.W%`[i],      
+    rundifferential$`Revised Est.W%`[i] 
+  ))
+}
+
+cat('</tbody></table>') 
+```
+
+```{r message=FALSE,echo=FALSE, warning=FALSE}
+
+ggplot(rundifferential, aes(x = `R-RA`, y = round((W / G) * 100, 1))) +
+  geom_point(size = 1) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE, linewidth = 1) +
+  labs(
+    title = "Wins percentage according to Runs scored compared to Runs Allowed",
+    x = "R-RA",
+    y = "W%"
+  ) +
+  theme(
+    plot.title = element_text(size = 11.5, face = "bold"), # Titre centré
+    axis.title = element_text(size = 10.5), # Taille des titres des axes
+    axis.text = element_text(size = 10.5),  # Taille des textes des axes
+    plot.background = element_rect(fill = "#d5e4eb"),
+    panel.background = element_rect(fill = "#d5e4eb"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    axis.line.x = element_line()
+  )
+
+```
+
+## <span style="color: rgb(221,72,20);">Runs Created</span>
+
+![](https://sabrstatanalysisblog.wordpress.com/wp-content/uploads/2018/07/cropped-maxresdefault.jpg?w=1024&h=255)
+
+### <span style="color:black;">Exercise</span>
+
+Using de differents versions of the formula from wikipedia:<a href= https://en.wikipedia.org/wiki/Runs_created" style="color:rgb(221,72,20);">Runs created on Wikipedia</a>
+
+
+calculate the “Runs Created” for 2001 (all players)<a   href="https://en.wikipedia.org/wiki/Baseball_statistics" style="color:rgb(221,72,20);">Useful link: Stats in baseball</a>
+
+#### <span style="color:black;">other ideas</span>
+
+See also (<a href="https://www.retrosheet.org/Research/SawyerB/THE%20LEAD%20OFF%20FORMULA.pdf" style="color:rgb(221,72,20);">https://www.retrosheet.org/Research/SawyerB/THE%20LEAD%20OFF%20FORMULA.pdf</a>) do linear regression plot w-l vs runs Export 
+
+data from <a href="https://www.baseball-reference.com/boxes/OAK/OAK201604040.shtml" style="color:rgb(221,72,20);">https://www.baseball-reference.com/boxes/OAK/OAK201604040.shtml</a>
+
+Football <a href="https://www.footballscience.net/special-topics/performance-analysis/" style="color:rgb(221,72,20);">https://www.footballscience.net/special-topics/performance-analysis/</a>
+
+
+## <span style="color: rgb(221,72,20);">Pitching Trends Over Years</span> 
+
+#### 1. Pitching Trends Over Years
+
+```{r pitching_trends, echo=FALSE, warning=FALSE,results='asis',message=FALSE}
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(Lahman)
+
+# Load dataset
+pitching <- (Pitching)
+
+# Validate required columns
+required_columns <- c("yearID", "ERA", "SO", "W", "playerID")
+if (!all(required_columns %in% colnames(pitching))) {
+  stop(paste("The dataset is missing one or more required columns:", 
+             paste(setdiff(required_columns, colnames(pitching)), collapse = ", ")))
+}
+
+# Aggregate data by year
+pitching_summary <- pitching %>%
+  group_by(yearID) %>%
+  summarize(
+    avg_ERA = mean(ERA, na.rm = TRUE),
+    total_SO = sum(SO, na.rm = TRUE)
+  )
+
+# Plot trends
+ggplot(pitching_summary, aes(x = yearID)) +
+  geom_line(aes(y = avg_ERA, color = "ERA"), size = 1) +
+  geom_line(aes(y = scales::rescale(total_SO, to = range(avg_ERA)), color = "Strikeouts"), size = 1) +
+  labs(
+    title = "Pitching Trends Over Years",
+    subtitle = "Average ERA and Total Strikeouts (scaled)",
+    x = "Year",
+    y = "ERA / Scaled Strikeouts"
+  ) +
+  scale_color_manual(name = "Metric", values = c("ERA" = "blue", "Strikeouts" = "green")) +
+  theme_minimal()
+
+# Parameter for top players
+n_top <- 10
+
+# Top players based on Wins
+top_pitchers <- pitching %>%
+  group_by(playerID) %>%
+  summarize(total_wins = sum(W, na.rm = TRUE)) %>%
+  arrange(desc(total_wins)) %>%
+  head(n_top)
+
+# Bar plot
+ggplot(top_pitchers, aes(x = reorder(playerID, total_wins), y = total_wins, fill = total_wins)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(
+    title = paste("Top", n_top, "Pitchers by Wins"),
+    x = "Player ID",
+    y = "Total Wins"
+  ) +
+  scale_fill_gradient(low = "lightblue", high = "blue") +
+  theme_minimal()
+
+# Scatter plot for ERA vs. Strikeouts
+ggplot(pitching, aes(x = SO, y = ERA)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(
+    title = "ERA vs. Strikeouts",
+    x = "Strikeouts",
+    y = "ERA"
+  ) +
+  theme_minimal()
+
+# Filter and select key columns for summary table
+pitching_summary <- pitching %>%
+  select(playerID, yearID, W, SO, ERA) %>%
+  filter(!is.na(W) & !is.na(SO) & !is.na(ERA)) %>%
+  arrange(desc(SO)) %>%
+  head(n_top)
+
+# Create a summary table
+kable(
+  pitching_summary,
+  caption = paste("Top", n_top, "Players by Strikeouts: Key Pitching Metrics"),
+  col.names = c("Player ID", "Year", "Wins", "Strikeouts", "ERA"),
+  align = 'c'
+)
+```
